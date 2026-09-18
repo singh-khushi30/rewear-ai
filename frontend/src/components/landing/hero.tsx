@@ -70,7 +70,7 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 0.75, ease: editorialEase }}
             className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8"
           >
-            <ButtonLink href="#wardrobe">Rewear My Closet</ButtonLink>
+            <ButtonLink href="/wardrobe/new">Rewear My Closet</ButtonLink>
             <ButtonLink href="#how-it-works" variant="secondary">
               See how it works
             </ButtonLink>

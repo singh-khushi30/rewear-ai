@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useState } from "react";
+import Link from "next/link";
 import { Container } from "@/components/container";
 import { navLinks } from "@/lib/navigation";
 import { cn } from "@/lib/cn";
@@ -49,36 +50,36 @@ export function SiteHeader() {
       )}
     >
       <Container className="grid h-16 grid-cols-[1fr_auto] items-center gap-4 md:grid-cols-[1fr_auto_1fr] lg:h-[4.75rem]">
-        <a
-          href="#top"
+        <Link
+          href="/"
           className="label text-olive motion-safe:hover:-translate-y-px justify-self-start transition-all duration-500 hover:opacity-70"
           aria-label="REWEAR home"
         >
           REWEAR
-        </a>
+        </Link>
 
         <nav
           aria-label="Primary"
           className="hidden items-center gap-8 md:flex lg:gap-10"
         >
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.href}
               href={link.href}
               className="label text-olive/80 motion-safe:hover:-translate-y-px transition-all duration-500 ease-editorial hover:text-olive"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
         <div className="flex items-center justify-end gap-5">
-          <a
-            href="#wardrobe"
+          <Link
+            href="/wardrobe/new"
             className="label bg-olive text-ivory motion-safe:hover:-translate-y-px hidden px-5 py-2.5 transition-all duration-500 ease-editorial hover:bg-olive-muted md:inline-flex"
           >
             Start Styling
-          </a>
+          </Link>
 
           <button
             type="button"
@@ -102,24 +103,24 @@ export function SiteHeader() {
               <ul className="flex flex-col gap-5">
                 {navLinks.map((link) => (
                   <li key={link.href}>
-                    <a
+                    <Link
                       href={link.href}
                       onClick={closeMenu}
                       className="label text-olive"
                     >
                       {link.label}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
             </nav>
-            <a
-              href="#wardrobe"
+            <Link
+              href="/wardrobe/new"
               onClick={closeMenu}
               className="label bg-olive text-ivory inline-flex w-fit px-5 py-3"
             >
               Start Styling
-            </a>
+            </Link>
           </Container>
         </div>
       ) : null}

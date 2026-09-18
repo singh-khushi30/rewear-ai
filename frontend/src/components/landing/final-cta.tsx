@@ -21,7 +21,7 @@ export function FinalCta() {
               Start with what you already have.
             </h2>
             <div className="mt-10">
-              <ButtonLink href="#wardrobe">Build My Wardrobe</ButtonLink>
+              <ButtonLink href="/wardrobe/new">Build My Wardrobe</ButtonLink>
             </div>
           </div>
         </Reveal>
