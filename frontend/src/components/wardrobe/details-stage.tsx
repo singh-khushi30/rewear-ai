@@ -12,12 +12,16 @@ import {
 export function DetailsStage({
   previewUrl,
   analysis,
+  saving,
+  error,
   onChange,
   onStartOver,
   onConfirm,
 }: {
   previewUrl: string;
   analysis: GarmentAnalysis;
+  saving: boolean;
+  error: string | null;
   onChange: (key: keyof GarmentAnalysis, value: string) => void;
   onStartOver: () => void;
   onConfirm: () => void;
@@ -57,9 +61,17 @@ export function DetailsStage({
           ))}
         </div>
 
+        {error ? (
+          <p role="alert" className="text-umber mt-8 text-sm">
+            {error}
+          </p>
+        ) : null}
+
         <div className="mt-12 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8">
-          <Button onClick={onConfirm}>Looks Right</Button>
-          <Button variant="secondary" onClick={onStartOver}>
+          <Button onClick={onConfirm} disabled={saving}>
+            {saving ? "Saving…" : "Looks Right"}
+          </Button>
+          <Button variant="secondary" onClick={onStartOver} disabled={saving}>
             Start Over
           </Button>
         </div>

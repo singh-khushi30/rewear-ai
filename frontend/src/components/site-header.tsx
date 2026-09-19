@@ -2,14 +2,16 @@
 
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/components/auth/auth-provider";
 import { Container } from "@/components/container";
-import { navLinks } from "@/lib/navigation";
+import { landingNavLinks } from "@/lib/navigation";
 import { cn } from "@/lib/cn";
 
 export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuId = useId();
+  const { user, loading, signOut } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -39,6 +41,10 @@ export function SiteHeader() {
   }, [menuOpen]);
 
   const closeMenu = () => setMenuOpen(false);
+  const navItems = [
+    ...landingNavLinks,
+    ...(user ? ([{ href: "/wardrobe", label: "My Wardrobe" }] as const) : []),
+  ];
 
   return (
     <header
@@ -62,7 +68,7 @@ export function SiteHeader() {
           aria-label="Primary"
           className="hidden items-center gap-8 md:flex lg:gap-10"
         >
-          {navLinks.map((link) => (
+          {navItems.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -74,11 +80,32 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center justify-end gap-5">
+          {loading ? (
+            <span className="hidden w-16 md:inline-flex" aria-hidden="true" />
+          ) : user ? (
+            <button
+              type="button"
+              onClick={() => {
+                void signOut();
+              }}
+              className="label text-olive/80 hover:text-olive hidden transition-colors duration-500 md:inline-flex"
+            >
+              Sign out
+            </button>
+          ) : (
+            <Link
+              href="/auth/sign-in"
+              className="label text-olive/80 hover:text-olive hidden transition-colors duration-500 md:inline-flex"
+            >
+              Sign In
+            </Link>
+          )}
+
           <Link
-            href="/wardrobe/new"
+            href={user ? "/wardrobe/new" : "/auth/sign-in?next=/wardrobe/new"}
             className="label bg-olive text-ivory motion-safe:hover:-translate-y-px hidden px-5 py-2.5 transition-all duration-500 ease-editorial hover:bg-olive-muted md:inline-flex"
           >
-            Start Styling
+            {user ? "Add a Piece" : "Start Styling"}
           </Link>
 
           <button
@@ -101,7 +128,7 @@ export function SiteHeader() {
           <Container className="flex flex-col gap-6 py-8">
             <nav aria-label="Mobile">
               <ul className="flex flex-col gap-5">
-                {navLinks.map((link) => (
+                {navItems.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
@@ -114,12 +141,32 @@ export function SiteHeader() {
                 ))}
               </ul>
             </nav>
+            {user ? (
+              <button
+                type="button"
+                className="label text-olive w-fit"
+                onClick={() => {
+                  closeMenu();
+                  void signOut();
+                }}
+              >
+                Sign out
+              </button>
+            ) : (
+              <Link
+                href="/auth/sign-in"
+                onClick={closeMenu}
+                className="label text-olive w-fit"
+              >
+                Sign In
+              </Link>
+            )}
             <Link
-              href="/wardrobe/new"
+              href={user ? "/wardrobe/new" : "/auth/sign-in?next=/wardrobe/new"}
               onClick={closeMenu}
               className="label bg-olive text-ivory inline-flex w-fit px-5 py-3"
             >
-              Start Styling
+              {user ? "Add a Piece" : "Start Styling"}
             </Link>
           </Container>
         </div>

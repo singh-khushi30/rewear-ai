@@ -27,7 +27,7 @@ export function NewItemFlow() {
             REWEAR
           </Link>
           <Link
-            href="/"
+            href="/wardrobe"
             className="label text-olive/70 hover:text-olive transition-colors duration-500"
           >
             Close
@@ -78,7 +78,11 @@ export function NewItemFlow() {
                 analysis={flow.analysis}
                 onChange={flow.updateAnalysisField}
                 onStartOver={flow.startOver}
-                onConfirm={flow.confirmDetails}
+                saving={flow.saving}
+                error={flow.error}
+                onConfirm={() => {
+                  void flow.confirmDetails();
+                }}
               />
             ) : null}
 

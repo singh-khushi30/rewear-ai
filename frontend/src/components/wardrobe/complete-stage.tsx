@@ -58,13 +58,13 @@ export function CompleteStage({
       ) : null}
 
       <div>
-        <p className="label text-olive mb-5">Temporary</p>
+        <p className="label text-olive mb-5">Saved</p>
         <h1 className="font-serif text-headline text-olive text-balance">
-          Your piece is ready.
+          Your piece is in the wardrobe.
         </h1>
         <p className="text-ink mt-6 max-w-xl text-[1.05rem] leading-relaxed">
-          Next, REWEAR will combine what you own with your plans, constraints
-          and style preferences.
+          Preferences stay here for now. Outfit planning comes later — this
+          piece is already saved to your closet.
         </p>
 
         <dl className="mt-12 space-y-8">
@@ -91,8 +91,11 @@ export function CompleteStage({
           </div>
         </dl>
 
-        <div className="mt-12">
-          <ButtonLink href="/">Back to Home</ButtonLink>
+        <div className="mt-12 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8">
+          <ButtonLink href="/wardrobe">View My Wardrobe</ButtonLink>
+          <ButtonLink href="/wardrobe/new" variant="secondary">
+            Add another piece
+          </ButtonLink>
         </div>
       </div>
     </motion.div>

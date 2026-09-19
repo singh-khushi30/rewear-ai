@@ -6,6 +6,7 @@ import { analyzeGarment } from "@/lib/analysis/analyze-garment";
 import type { AnalysisProgress } from "@/lib/analysis/types";
 import { validateGarmentFile } from "@/lib/garment-file";
 import { useObjectUrl } from "@/hooks/use-object-url";
+import { saveGarment, WardrobeError } from "@/lib/wardrobe/garments";
 import type {
   FlowStep,
   GarmentAnalysis,
@@ -34,7 +35,9 @@ export function useNewGarmentFlow() {
   const [progress, setProgress] = useState<AnalysisProgress | null>(null);
   const [preferences, setPreferences] =
     useState<StylingPreferences>(emptyPreferences);
+  const [saving, setSaving] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+  const savingRef = useRef(false);
   const previewUrl = useObjectUrl(file);
 
   useEffect(() => {
@@ -108,6 +111,8 @@ export function useNewGarmentFlow() {
     setProgress(null);
     setPreferences(emptyPreferences);
     setError(null);
+    setSaving(false);
+    savingRef.current = false;
     setStep("upload");
   };
 
@@ -120,12 +125,33 @@ export function useNewGarmentFlow() {
     );
   };
 
-  const confirmDetails = () => {
-    if (!analysis) {
+  const confirmDetails = async () => {
+    if (!analysis || !file || savingRef.current) {
       return;
     }
+
+    if (!analysis.category.trim() || !analysis.primaryColor.trim()) {
+      setError("Category and primary color are required.");
+      return;
+    }
+
+    savingRef.current = true;
+    setSaving(true);
     setError(null);
-    setStep("preferences");
+
+    try {
+      await saveGarment({ file, analysis });
+      setStep("preferences");
+    } catch (caught) {
+      setError(
+        caught instanceof WardrobeError
+          ? caught.message
+          : "We couldn’t save that piece. Try again.",
+      );
+    } finally {
+      savingRef.current = false;
+      setSaving(false);
+    }
   };
 
   const toggleOccasion = (occasion: Occasion) => {
@@ -172,6 +198,7 @@ export function useNewGarmentFlow() {
     progress,
     preferences,
     canContinue,
+    saving,
     selectFile,
     removeFile,
     analyzePiece,
