@@ -14,7 +14,6 @@ export type AnalysisProgress = {
 export type AnalyzeGarmentOptions = {
   onProgress?: (progress: AnalysisProgress) => void;
   signal?: AbortSignal;
-  stepDelayMs?: number;
 };
 
 export type AnalyzeGarment = (

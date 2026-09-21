@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { demoAnalysisStages } from "@/lib/analysis/analyze-garment";
+import { analysisStages } from "@/lib/analysis/stages";
 import type { AnalysisProgress } from "@/lib/analysis/types";
 import { editorialEase } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -41,27 +41,20 @@ export function AnalyzingStage({
         </h1>
 
         <ol className="mt-12 space-y-6" aria-live="polite">
-          {demoAnalysisStages.map((stage, index) => {
-            const state =
-              index < currentIndex
-                ? "done"
-                : index === currentIndex
-                  ? "current"
-                  : "upcoming";
+          {analysisStages.map((stage, index) => {
+            const current = index === currentIndex;
 
             return (
               <li key={stage.id}>
                 <p
                   className={cn(
                     "font-serif text-2xl transition-colors duration-700 sm:text-3xl",
-                    state === "current" && "text-olive",
-                    state === "done" && "text-olive/45",
-                    state === "upcoming" && "text-olive/25",
+                    current ? "text-olive" : "text-olive/25",
                   )}
                 >
                   {stage.label}
                 </p>
-                {state === "current" ? (
+                {current ? (
                   <motion.span
                     aria-hidden="true"
                     className="bg-olive mt-3 block h-px origin-left"

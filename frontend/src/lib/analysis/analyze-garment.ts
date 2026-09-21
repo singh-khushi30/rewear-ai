@@ -1,11 +1,11 @@
 /**
  * Public analysis entry point.
  *
- * Today this is the temporary demo adapter. Later, swap the implementation
- * for the Express / Gemini client without changing the wardrobe UI.
+ * UI → analyzeGarment() → Express → Gemini.
+ * Do not import the Gemini SDK from the browser.
  */
-export { demoAnalyzeGarment as analyzeGarment } from "@/lib/analysis/demo-analyze-garment";
-export { demoAnalysisStages } from "@/lib/analysis/demo-analyze-garment";
+export { analyzeGarment } from "@/lib/analysis/api-analyze-garment";
+export { analysisStages } from "@/lib/analysis/stages";
 export type {
   AnalyzeGarment,
   AnalyzeGarmentInput,

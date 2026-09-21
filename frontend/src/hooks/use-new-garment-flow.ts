@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useReducedMotion } from "motion/react";
 import { analyzeGarment } from "@/lib/analysis/analyze-garment";
+import { AnalysisError } from "@/lib/analysis/errors";
 import type { AnalysisProgress } from "@/lib/analysis/types";
 import { validateGarmentFile } from "@/lib/garment-file";
 import { useObjectUrl } from "@/hooks/use-object-url";
@@ -27,7 +27,6 @@ function isAbortError(error: unknown) {
 }
 
 export function useNewGarmentFlow() {
-  const prefersReducedMotion = useReducedMotion();
   const [step, setStep] = useState<FlowStep>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +37,8 @@ export function useNewGarmentFlow() {
   const [saving, setSaving] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const savingRef = useRef(false);
+  const analyzingRef = useRef(false);
+  const requestSeqRef = useRef(0);
   const previewUrl = useObjectUrl(file);
 
   useEffect(() => {
@@ -53,7 +54,9 @@ export function useNewGarmentFlow() {
       return;
     }
 
+    requestSeqRef.current += 1;
     abortRef.current?.abort();
+    analyzingRef.current = false;
     setError(null);
     setAnalysis(null);
     setProgress(null);
@@ -62,7 +65,9 @@ export function useNewGarmentFlow() {
   };
 
   const removeFile = () => {
+    requestSeqRef.current += 1;
     abortRef.current?.abort();
+    analyzingRef.current = false;
     setFile(null);
     setAnalysis(null);
     setProgress(null);
@@ -71,13 +76,15 @@ export function useNewGarmentFlow() {
   };
 
   const analyzePiece = async () => {
-    if (!file) {
+    if (!file || analyzingRef.current) {
       return;
     }
 
+    analyzingRef.current = true;
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
+    const requestSeq = ++requestSeqRef.current;
     setError(null);
     setProgress(null);
     setStep("analyzing");
@@ -87,24 +94,40 @@ export function useNewGarmentFlow() {
         { file },
         {
           signal: controller.signal,
-          stepDelayMs: prefersReducedMotion ? 80 : 1400,
           onProgress: setProgress,
         },
       );
 
-      setAnalysis(result);
-      setStep("details");
-    } catch (caught) {
-      if (isAbortError(caught) || controller.signal.aborted) {
+      if (requestSeq !== requestSeqRef.current || controller.signal.aborted) {
         return;
       }
 
-      setError("We couldn’t analyze that piece. Try another photo.");
-      setStep("preview");
+      setAnalysis(result);
+      setStep("details");
+    } catch (caught) {
+      if (
+        isAbortError(caught) ||
+        controller.signal.aborted ||
+        requestSeq !== requestSeqRef.current
+      ) {
+        return;
+      }
+
+      setError(
+        caught instanceof AnalysisError
+          ? caught.message
+          : "We couldn’t read this piece clearly.",
+      );
+      setStep("analysis-error");
+    } finally {
+      if (requestSeq === requestSeqRef.current) {
+        analyzingRef.current = false;
+      }
     }
   };
 
   const startOver = () => {
+    requestSeqRef.current += 1;
     abortRef.current?.abort();
     setFile(null);
     setAnalysis(null);
@@ -113,6 +136,7 @@ export function useNewGarmentFlow() {
     setError(null);
     setSaving(false);
     savingRef.current = false;
+    analyzingRef.current = false;
     setStep("upload");
   };
 

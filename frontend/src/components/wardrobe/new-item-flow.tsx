@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence } from "motion/react";
 import { Container } from "@/components/container";
+import { AnalysisErrorStage } from "@/components/wardrobe/analysis-error-stage";
 import { AnalyzingStage } from "@/components/wardrobe/analyzing-stage";
 import { CompleteStage } from "@/components/wardrobe/complete-stage";
 import { DetailsStage } from "@/components/wardrobe/details-stage";
@@ -66,6 +67,20 @@ export function NewItemFlow() {
                 key="analyzing"
                 progress={flow.progress}
                 previewUrl={flow.previewUrl}
+              />
+            ) : null}
+
+            {flow.step === "analysis-error" &&
+            flow.previewUrl &&
+            flow.error ? (
+              <AnalysisErrorStage
+                key="analysis-error"
+                previewUrl={flow.previewUrl}
+                error={flow.error}
+                onRetry={() => {
+                  void flow.analyzePiece();
+                }}
+                onSelect={flow.selectFile}
               />
             ) : null}
 

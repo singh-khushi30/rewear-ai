@@ -56,6 +56,7 @@ export type FlowStep =
   | "upload"
   | "preview"
   | "analyzing"
+  | "analysis-error"
   | "details"
   | "preferences"
   | "complete";
