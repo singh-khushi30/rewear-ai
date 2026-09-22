@@ -63,8 +63,8 @@ export function CompleteStage({
           Your piece is in the wardrobe.
         </h1>
         <p className="text-ink mt-6 max-w-xl text-[1.05rem] leading-relaxed">
-          Preferences stay here for now. Outfit planning comes later — this
-          piece is already saved to your closet.
+          This piece is saved to your closet. When you have a few garments,
+          REWEAR can plan looks from what you own.
         </p>
 
         <dl className="mt-12 space-y-8">

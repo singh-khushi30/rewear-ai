@@ -41,10 +41,12 @@ export function SiteHeader() {
   }, [menuOpen]);
 
   const closeMenu = () => setMenuOpen(false);
-  const navItems = [
-    ...landingNavLinks,
-    ...(user ? ([{ href: "/wardrobe", label: "My Wardrobe" }] as const) : []),
-  ];
+  const navItems = user
+    ? ([
+        { href: "/wardrobe", label: "Wardrobe" },
+        { href: "/plan", label: "Plan Looks" },
+      ] as const)
+    : landingNavLinks;
 
   return (
     <header

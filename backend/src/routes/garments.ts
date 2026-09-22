@@ -100,7 +100,7 @@ export function createGarmentsRouter(options?: {
       } catch (error) {
         if (error instanceof AnalysisValidationError) {
           console.info(
-            `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} result=invalid_response latencyMs=${Date.now() - startedAt}`,
+            `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} model=${getGeminiModel()} result=invalid_response latencyMs=${Date.now() - startedAt}`,
           );
           sendError(
             res,
@@ -113,7 +113,7 @@ export function createGarmentsRouter(options?: {
 
         if (error instanceof AnalysisUnavailableError) {
           console.info(
-            `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} result=unavailable latencyMs=${Date.now() - startedAt}`,
+            `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} model=${getGeminiModel()} result=unavailable latencyMs=${Date.now() - startedAt}`,
           );
           sendError(
             res,
@@ -125,7 +125,7 @@ export function createGarmentsRouter(options?: {
         }
 
         console.info(
-          `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} result=failed latencyMs=${Date.now() - startedAt}`,
+          `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} model=${getGeminiModel()} result=failed latencyMs=${Date.now() - startedAt}`,
         );
         if (process.env.NODE_ENV !== "production") {
           console.info(

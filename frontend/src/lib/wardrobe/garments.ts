@@ -1,7 +1,7 @@
 /**
  * Wardrobe CRUD uses the authenticated browser Supabase client.
  * Identity is derived from the session / RLS (auth.uid()), never a
- * client-supplied user_id. Express is used for Gemini analysis only.
+ * client-supplied user_id. Express is used for Gemini analysis and planning.
  */
 import { garmentFileExtension } from "@/lib/garment-file";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";

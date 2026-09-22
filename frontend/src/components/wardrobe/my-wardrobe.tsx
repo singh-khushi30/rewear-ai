@@ -43,6 +43,8 @@ export function MyWardrobe({
     }
   };
 
+  const hasPieces = Boolean(items && items.length > 0);
+
   const confirmDelete = async () => {
     if (!pendingDelete || deleting) {
       return;
@@ -95,7 +97,7 @@ export function MyWardrobe({
           >
             REWEAR
           </Link>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
             <button
               type="button"
               onClick={() => {
@@ -105,12 +107,29 @@ export function MyWardrobe({
             >
               Sign out
             </button>
-            <Link
-              href="/wardrobe/new"
-              className="label bg-olive text-ivory motion-safe:hover:-translate-y-px px-5 py-2.5 transition-all duration-500 hover:bg-olive-muted"
-            >
-              Add a Piece
-            </Link>
+            {hasPieces ? (
+              <>
+                <Link
+                  href="/wardrobe/new"
+                  className="label text-olive/70 hover:text-olive hidden transition-colors duration-500 sm:inline-flex"
+                >
+                  Add a Piece
+                </Link>
+                <Link
+                  href="/plan"
+                  className="label bg-olive text-ivory motion-safe:hover:-translate-y-px px-5 py-2.5 transition-all duration-500 hover:bg-olive-muted"
+                >
+                  Plan Looks
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/wardrobe/new"
+                className="label bg-olive text-ivory motion-safe:hover:-translate-y-px px-5 py-2.5 transition-all duration-500 hover:bg-olive-muted"
+              >
+                Add a Piece
+              </Link>
+            )}
           </div>
         </Container>
       </header>
@@ -126,9 +145,14 @@ export function MyWardrobe({
               The pieces REWEAR can plan with.
             </p>
           </div>
-          <ButtonLink href="/wardrobe/new" className="hidden lg:inline-flex">
-            Add a Piece
-          </ButtonLink>
+          {hasPieces ? (
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-8">
+              <ButtonLink href="/plan">Plan Looks</ButtonLink>
+              <ButtonLink href="/wardrobe/new" variant="secondary">
+                Add a Piece
+              </ButtonLink>
+            </div>
+          ) : null}
         </div>
 
         {notice ? (

@@ -6,7 +6,12 @@ export type ApiErrorCode =
   | "IMAGE_TOO_LARGE"
   | "INVALID_IMAGE"
   | "ANALYSIS_FAILED"
-  | "ANALYSIS_UNAVAILABLE";
+  | "ANALYSIS_UNAVAILABLE"
+  | "INVALID_REQUEST"
+  | "EMPTY_WARDROBE"
+  | "UNSATISFIED_CONSTRAINTS"
+  | "PLANNING_FAILED"
+  | "PLANNING_UNAVAILABLE";
 
 export function sendError(
   res: Response,
@@ -34,4 +39,11 @@ export const userSafeMessages = {
   invalidImage: "We couldn’t read this photograph. Try another file.",
   analysisFailed: "We couldn’t analyze this piece. Try another photo.",
   analysisUnavailable: "Analysis is temporarily unavailable. Try again shortly.",
+  invalidRequest: "Tell REWEAR what you need in a short request.",
+  emptyWardrobe:
+    "Add a few pieces to your wardrobe first. REWEAR can only plan with what you already own.",
+  unsatisfiedConstraints:
+    "I couldn’t satisfy every constraint with the pieces you own.",
+  planningFailed: "We couldn’t finish this plan. Try again shortly.",
+  planningUnavailable: "Planning is temporarily unavailable. Try again shortly.",
 } as const;

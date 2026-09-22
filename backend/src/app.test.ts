@@ -5,6 +5,11 @@ import { test } from "node:test";
 import { createApp } from "./app.js";
 import { AnalysisValidationError } from "./lib/analysis/schema.js";
 import { maxGarmentBytes } from "./lib/image.js";
+import {
+  outfitConstraints,
+  validOutfitPlan,
+  wardrobe,
+} from "./planning/fixtures.js";
 
 const png = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
@@ -171,6 +176,169 @@ test("malformed Gemini response becomes a controlled failure", async () => {
       assert.doesNotMatch(payload.error.message, /gemini|schema|stack/i);
     },
   );
+});
+
+test("unauthenticated planning request returns 401", async () => {
+  await withServer(
+    createApp({
+      verifyAccessToken: async () => null,
+      loadPlannerWardrobe: async () => wardrobe,
+      runPlanning: async () => {
+        throw new Error("planning should not run");
+      },
+    }),
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/plans/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          request: "Give me 2 different outfits using only what I own.",
+        }),
+      });
+      const payload = await response.json();
+
+      assert.equal(response.status, 401);
+      assert.equal(payload.success, false);
+      assert.equal(payload.error.code, "UNAUTHENTICATED");
+    },
+  );
+});
+
+test("empty wardrobe is handled without invoking the planner", async () => {
+  let planned = false;
+
+  await withServer(
+    createApp({
+      verifyAccessToken: async (token) =>
+        token === "valid-token" ? { id: "user-12345678" } : null,
+      loadPlannerWardrobe: async () => [],
+      runPlanning: async () => {
+        planned = true;
+        throw new Error("Gemini should not be called");
+      },
+    }),
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/plans/generate`, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer valid-token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          request: "Give me 5 distinct outfits.",
+        }),
+      });
+      const payload = await response.json();
+
+      assert.equal(planned, false);
+      assert.equal(response.status, 422);
+      assert.equal(payload.success, false);
+      assert.equal(payload.error.code, "EMPTY_WARDROBE");
+      assert.doesNotMatch(payload.error.message, /gemini|prompt|stack/i);
+    },
+  );
+});
+
+test("valid planning result is returned without the raw wardrobe", async () => {
+  await withServer(
+    createApp({
+      verifyAccessToken: async (token) =>
+        token === "valid-token" ? { id: "user-12345678" } : null,
+      loadPlannerWardrobe: async () => wardrobe,
+      runPlanning: async () => ({
+        status: "valid",
+        plan: validOutfitPlan(),
+        constraints: outfitConstraints(),
+        validation: { valid: true, violations: [] },
+        firstPassValid: true,
+        repairAttempts: 0,
+        finalValid: true,
+        violationCodes: [],
+        message: null,
+      }),
+    }),
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/plans/generate`, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer valid-token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          request: "Give me 2 different outfits using only what I own.",
+        }),
+      });
+      const payload = await response.json();
+
+      assert.equal(response.status, 200);
+      assert.equal(payload.success, true);
+      assert.deepEqual(payload.plan, validOutfitPlan());
+      assert.equal(payload.meta.lookCount, 2);
+      assert.equal(payload.meta.repaired, false);
+    },
+  );
+});
+
+test("planning success returns no generated preview", async () => {
+  await withServer(
+    createApp({
+      verifyAccessToken: async (token) =>
+        token === "valid-token" ? { id: "user-12345678" } : null,
+      loadPlannerWardrobe: async () => wardrobe,
+      runPlanning: async () => ({
+        status: "valid",
+        plan: validOutfitPlan(),
+        constraints: outfitConstraints(),
+        validation: { valid: true, violations: [] },
+        firstPassValid: true,
+        repairAttempts: 0,
+        finalValid: true,
+        violationCodes: [],
+        message: null,
+      }),
+    }),
+    async (baseUrl) => {
+      const response = await fetch(`${baseUrl}/api/plans/generate`, {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer valid-token",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          request: "Give me 2 different outfits using only what I own.",
+        }),
+      });
+      const payload = await response.json();
+
+      assert.equal(response.status, 200);
+      assert.equal(payload.success, true);
+      assert.equal(payload.preview, undefined);
+      assert.equal(payload.plan.outfits[0].preview, undefined);
+      assert.deepEqual(payload.plan.outfits[0].garmentIds, [
+        "top-1",
+        "bottom-1",
+        "shoe-1",
+      ]);
+    },
+  );
+});
+
+test("image-generation visualize route is not registered", async () => {
+  await withServer(createApp(), async (baseUrl) => {
+    const response = await fetch(`${baseUrl}/api/plans/visualize`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer valid-token",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        outfitId: "look-1",
+        garmentIds: ["top-1"],
+      }),
+    });
+
+    assert.equal(response.status, 404);
+  });
 });
 
 test("valid structured response maps to GarmentAnalysis", async () => {

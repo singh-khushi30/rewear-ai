@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { ButtonLink } from "@/components/button-link";
 import { Container } from "@/components/container";
 import { HeroVisual } from "@/components/landing/hero-visual";
+import { useAuth } from "@/components/auth/auth-provider";
 import { editorialEase, stagger } from "@/lib/motion";
 
 const headline = [
@@ -13,6 +14,8 @@ const headline = [
 ];
 
 export function Hero() {
+  const { user } = useAuth();
+
   return (
     <section
       id="top"
@@ -71,9 +74,15 @@ export function Hero() {
             className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8"
           >
             <ButtonLink href="/wardrobe/new">Rewear My Closet</ButtonLink>
-            <ButtonLink href="#how-it-works" variant="secondary">
-              See how it works
-            </ButtonLink>
+            {user ? (
+              <ButtonLink href="/plan" variant="secondary">
+                Plan looks
+              </ButtonLink>
+            ) : (
+              <ButtonLink href="#how-it-works" variant="secondary">
+                See how it works
+              </ButtonLink>
+            )}
           </motion.div>
         </div>
 

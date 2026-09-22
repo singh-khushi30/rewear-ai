@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-export const defaultGeminiModel = "gemini-2.5-flash";
+export const defaultGeminiModel = "gemini-3.6-flash";
 
 export function getGeminiModel() {
   const configured = process.env.GEMINI_MODEL?.trim();

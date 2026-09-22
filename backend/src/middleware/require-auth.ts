@@ -57,6 +57,7 @@ export function requireAuth(
         }
 
         req.user = user;
+        req.accessToken = token;
         next();
       })
       .catch((error: unknown) => {
