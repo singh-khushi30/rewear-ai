@@ -27,6 +27,8 @@ const activeFiles = [
   "lib/planning/generate-plan.ts",
   "lib/planning/look.ts",
   "lib/planning/garment-role.ts",
+  "app/looks/page.tsx",
+  "app/looks/[id]/page.tsx",
 ];
 
 test("normal planning UI never requests image generation", () => {

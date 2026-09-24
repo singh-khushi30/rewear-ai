@@ -8,7 +8,7 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/app.test.ts src/lib/analysis/schema.test.ts src/lib/analysis/gemini-error.test.ts src/planning/validator.test.ts src/planning/graph.test.ts"
+    "test": "tsx --test src/app.test.ts src/lib/analysis/schema.test.ts src/lib/analysis/gemini-error.test.ts src/planning/validator.test.ts src/planning/graph.test.ts src/looks/looks.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.23.0",

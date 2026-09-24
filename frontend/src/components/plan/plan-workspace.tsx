@@ -130,6 +130,12 @@ export function PlanWorkspace() {
             >
               My Wardrobe
             </Link>
+            <Link
+              href="/looks"
+              className="label text-olive/55 hover:text-olive transition-colors duration-500"
+            >
+              Saved Looks
+            </Link>
           </div>
           <div className="max-w-3xl">
             <h1 className="font-serif text-headline text-olive text-balance">

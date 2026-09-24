@@ -110,6 +110,12 @@ export function MyWardrobe({
             {hasPieces ? (
               <>
                 <Link
+                  href="/looks"
+                  className="label text-olive/70 hover:text-olive hidden transition-colors duration-500 sm:inline-flex"
+                >
+                  Saved Looks
+                </Link>
+                <Link
                   href="/wardrobe/new"
                   className="label text-olive/70 hover:text-olive hidden transition-colors duration-500 sm:inline-flex"
                 >

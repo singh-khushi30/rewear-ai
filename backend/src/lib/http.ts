@@ -11,7 +11,10 @@ export type ApiErrorCode =
   | "EMPTY_WARDROBE"
   | "UNSATISFIED_CONSTRAINTS"
   | "PLANNING_FAILED"
-  | "PLANNING_UNAVAILABLE";
+  | "PLANNING_UNAVAILABLE"
+  | "LOOKS_UNAVAILABLE"
+  | "LOOK_NOT_FOUND"
+  | "FOREIGN_GARMENT";
 
 export function sendError(
   res: Response,
@@ -46,4 +49,8 @@ export const userSafeMessages = {
     "I couldn’t satisfy every constraint with the pieces you own.",
   planningFailed: "We couldn’t finish this plan. Try again shortly.",
   planningUnavailable: "Planning is temporarily unavailable. Try again shortly.",
+  looksUnavailable: "Saved looks are temporarily unavailable. Try again shortly.",
+  lookNotFound: "That saved look is no longer available.",
+  foreignGarment: "A look can only be saved from garments you own.",
+  invalidLook: "Choose garments from your wardrobe to save this look.",
 } as const;

@@ -1,8 +1,10 @@
+import { SaveLookButton } from "@/components/looks/save-look-button";
 import { OutfitComposition } from "@/components/plan/outfit-composition";
+import { PieceThumbnails } from "@/components/plan/piece-thumbnails";
 import {
+  canonicalOwnedIds,
   lookLabel,
   resolveLookPieces,
-  type ResolvedLookPiece,
 } from "@/lib/planning/look";
 import type { PlanningOutfit, PlanningSuccess } from "@/lib/planning/types";
 import type { WardrobeItem } from "@/lib/wardrobe/garments";
@@ -59,13 +61,21 @@ function LookCard({
   garments: Map<string, WardrobeItem>;
 }) {
   const pieces = resolveLookPieces(outfit.garmentIds, garments);
+  const ownedIds = canonicalOwnedIds(pieces);
 
   return (
     <article>
-      <p className="label text-olive mb-6">
-        {lookLabel(index)}
-        {outfit.occasion ? ` · ${outfit.occasion}` : ""}
-      </p>
+      <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
+        <p className="label text-olive">
+          {lookLabel(index)}
+          {outfit.occasion ? ` · ${outfit.occasion}` : ""}
+        </p>
+        <SaveLookButton
+          occasion={outfit.occasion}
+          rationale={outfit.rationale}
+          garmentIds={ownedIds}
+        />
+      </div>
 
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-12">
         <OutfitComposition garments={pieces} />
@@ -81,35 +91,5 @@ function LookCard({
         </div>
       </div>
     </article>
-  );
-}
-
-function PieceThumbnails({ pieces }: { pieces: ResolvedLookPiece[] }) {
-  return (
-    <ul className="flex flex-wrap gap-3">
-      {pieces.map((piece) => (
-        <li key={piece.id} className="w-[4.75rem] min-w-0 sm:w-[5.25rem]">
-          <div className="bg-olive relative aspect-[3/4] overflow-hidden">
-            {piece.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={piece.imageUrl}
-                alt={`${piece.primaryColor} ${piece.category}`.trim()}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-end p-2">
-                <p className="label text-ivory/70">
-                  {piece.owned ? piece.category : "Unavailable"}
-                </p>
-              </div>
-            )}
-          </div>
-          <p className="text-olive mt-2 font-serif text-sm leading-snug capitalize">
-            {piece.category}
-          </p>
-        </li>
-      ))}
-    </ul>
   );
 }

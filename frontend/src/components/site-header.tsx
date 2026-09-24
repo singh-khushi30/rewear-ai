@@ -45,6 +45,7 @@ export function SiteHeader() {
     ? ([
         { href: "/wardrobe", label: "Wardrobe" },
         { href: "/plan", label: "Plan Looks" },
+        { href: "/looks", label: "Saved Looks" },
       ] as const)
     : landingNavLinks;
 

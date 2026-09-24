@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test src/lib/planning/look.test.ts src/lib/planning/garment-role.test.ts src/lib/planning/composition.test.ts"
+    "test": "node --import tsx --test src/lib/planning/look.test.ts src/lib/planning/garment-role.test.ts src/lib/planning/composition.test.ts src/lib/looks/format.test.ts src/lib/looks/looks.test.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
