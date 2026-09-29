@@ -3,6 +3,7 @@
 import { useId, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/button-link";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { authReasonMessage } from "@/lib/auth/reasons";
@@ -27,6 +28,7 @@ export function AuthForm({
   const errorId = useId();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const configured = isSupabaseConfigured();
   const [error, setError] = useState(
@@ -108,7 +110,7 @@ export function AuthForm({
         <p className="label text-olive mb-4">Confirm your email</p>
         <p className="text-ink text-[1.05rem] leading-relaxed">
           We sent a confirmation link to {email.trim() || "your email"}. Open it
-          to finish creating your account, then you’ll land in your wardrobe.
+          to finish creating your account, then you’ll return to the home page.
         </p>
         <Link
           href={`/auth/sign-in?next=${encodeURIComponent(next)}`}
@@ -136,20 +138,37 @@ export function AuthForm({
         />
       </label>
 
-      <label className="block" htmlFor={passwordId}>
-        <span className="label text-olive/70">Password</span>
-        <input
-          id={passwordId}
-          type="password"
-          name="password"
-          autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
-          required
-          minLength={6}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="font-serif text-olive mt-2 w-full border-0 border-b border-stone bg-transparent py-2 text-xl outline-none focus-visible:border-olive"
-        />
-      </label>
+      <div>
+        <label className="block" htmlFor={passwordId}>
+          <span className="label text-olive/70">Password</span>
+        </label>
+        <div className="relative mt-2">
+          <input
+            id={passwordId}
+            type={showPassword ? "text" : "password"}
+            name="password"
+            autoComplete={mode === "sign-in" ? "current-password" : "new-password"}
+            required
+            minLength={6}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="font-serif text-olive w-full border-0 border-b border-stone bg-transparent py-2 pr-12 text-xl outline-none focus-visible:border-olive"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((visible) => !visible)}
+            className="text-olive/70 hover:text-olive absolute top-1/2 right-6 -translate-y-1/2 p-0.5 transition-colors duration-300"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-pressed={showPassword}
+          >
+            {showPassword ? (
+              <EyeOff className="size-3" strokeWidth={1.5} aria-hidden="true" />
+            ) : (
+              <Eye className="size-3" strokeWidth={1.5} aria-hidden="true" />
+            )}
+          </button>
+        </div>
+      </div>
 
       {error ? (
         <p id={errorId} role="alert" className="text-umber text-sm">
