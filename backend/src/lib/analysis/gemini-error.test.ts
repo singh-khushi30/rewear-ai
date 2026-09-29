@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { ApiError } from "@google/genai";
 import {
   describeGeminiFailure,
+  isTransientGeminiFailure,
   sanitizeGeminiDiagnostic,
 } from "./gemini-error.js";
 
@@ -35,4 +36,35 @@ test("extracts Google status fields from ApiError JSON", () => {
     code: "NOT_FOUND",
     message: "models/not-a-model is not found for API version v1beta",
   });
+});
+
+test("503 high-demand errors are treated as transient", () => {
+  const error = new ApiError({
+    status: 503,
+    message: JSON.stringify({
+      error: {
+        code: 503,
+        status: "UNAVAILABLE",
+        message:
+          "This model is currently experiencing high demand. Please try again later.",
+      },
+    }),
+  });
+
+  assert.equal(isTransientGeminiFailure(error), true);
+});
+
+test("404 model errors are not treated as transient", () => {
+  const error = new ApiError({
+    status: 404,
+    message: JSON.stringify({
+      error: {
+        code: 404,
+        status: "NOT_FOUND",
+        message: "models/not-a-model is not found",
+      },
+    }),
+  });
+
+  assert.equal(isTransientGeminiFailure(error), false);
 });

@@ -16,17 +16,10 @@ export function Reveal({
   return (
     <motion.div
       className={cn(className)}
-      initial="hidden"
-      whileInView="visible"
+      initial={false}
+      whileInView={{ opacity: 1, y: 0 }}
       viewport={viewportOnce}
-      variants={{
-        hidden: { opacity: 0, y: 24 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.9, ease: editorialEase, delay },
-        },
-      }}
+      transition={{ duration: 0.9, ease: editorialEase, delay }}
     >
       {children}
     </motion.div>

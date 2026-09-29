@@ -20,6 +20,7 @@ import { shortenUserId } from "../lib/request-id.js";
 import {
   describeGeminiFailure,
   formatGeminiFailureLog,
+  isTransientGeminiFailure,
 } from "../lib/analysis/gemini-error.js";
 import { getGeminiModel } from "../lib/gemini.js";
 import { requireAuth, type VerifyAccessToken } from "../middleware/require-auth.js";
@@ -124,14 +125,24 @@ export function createGarmentsRouter(options?: {
           return;
         }
 
+        const diagnostic = describeGeminiFailure(error);
         console.info(
           `[analyze] requestId=${requestId} user=${shortenUserId(userId)} mime=${mimeType} bytes=${file.buffer.length} model=${getGeminiModel()} result=failed latencyMs=${Date.now() - startedAt}`,
         );
         if (process.env.NODE_ENV !== "production") {
-          console.info(
-            formatGeminiFailureLog(describeGeminiFailure(error), getGeminiModel()),
-          );
+          console.info(formatGeminiFailureLog(diagnostic, getGeminiModel()));
         }
+
+        if (isTransientGeminiFailure(error)) {
+          sendError(
+            res,
+            503,
+            "ANALYSIS_UNAVAILABLE",
+            userSafeMessages.analysisUnavailable,
+          );
+          return;
+        }
+
         sendError(res, 502, "ANALYSIS_FAILED", userSafeMessages.analysisFailed);
       }
     },

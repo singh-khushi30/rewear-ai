@@ -73,6 +73,31 @@ export function formatGeminiFailureLog(
   return `[analyze] gemini status=${diagnostic.status ?? "unknown"} code=${diagnostic.code ?? "unknown"} type=${diagnostic.type} model=${model} message=${diagnostic.message}`;
 }
 
+const transientStatuses = new Set([429, 500, 503, 504]);
+const transientCodes = new Set([
+  "UNAVAILABLE",
+  "RESOURCE_EXHAUSTED",
+  "ABORTED",
+  "DEADLINE_EXCEEDED",
+  "INTERNAL",
+]);
+
+export function isTransientGeminiFailure(error: unknown) {
+  const diagnostic = describeGeminiFailure(error);
+
+  if (diagnostic.status !== null && transientStatuses.has(diagnostic.status)) {
+    return true;
+  }
+
+  if (diagnostic.code && transientCodes.has(diagnostic.code.toUpperCase())) {
+    return true;
+  }
+
+  return /high demand|try again later|temporarily unavailable|overloaded/i.test(
+    diagnostic.message,
+  );
+}
+
 type GoogleErrorBody = {
   code?: unknown;
   status?: unknown;

@@ -9,12 +9,14 @@ const display = Cormorant_Garamond({
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   display: "swap",
+  adjustFontFallback: false,
 });
 
 const body = Outfit({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

@@ -1,16 +1,6 @@
-"use client";
-
-import { motion } from "motion/react";
-import { editorialEase } from "@/lib/motion";
-
 export function HeroVisual() {
   return (
-    <motion.figure
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 1.25, delay: 0.28, ease: editorialEase }}
-      className="relative mx-auto w-full min-w-0 max-w-[34rem] lg:max-w-none"
-    >
+    <figure className="relative mx-auto w-full min-w-0 max-w-[34rem] lg:max-w-none">
       <div className="grid min-w-0 grid-cols-[1.15fr_0.85fr] gap-3 sm:gap-4">
         <div className="bg-olive text-ivory relative flex min-h-[28rem] min-w-0 flex-col justify-between overflow-hidden p-5 sm:min-h-[34rem] sm:p-7">
           <p className="label">Look 01</p>
@@ -42,7 +32,7 @@ export function HeroVisual() {
           1 piece · multiple looks · 0 impulse buys
         </p>
       </figcaption>
-    </motion.figure>
+    </figure>
   );
 }
 

@@ -3,6 +3,7 @@ import { sendError, userSafeMessages } from "../lib/http.js";
 import {
   describeGeminiFailure,
   formatGeminiFailureLog,
+  isTransientGeminiFailure,
 } from "../lib/analysis/gemini-error.js";
 import { getGeminiModel } from "../lib/gemini.js";
 import { requireAuth, type VerifyAccessToken } from "../middleware/require-auth.js";
@@ -182,6 +183,16 @@ export function createPlansRouter(options?: {
               getGeminiModel(),
             ).replace("[analyze]", "[plan]"),
           );
+        }
+
+        if (isTransientGeminiFailure(error)) {
+          sendError(
+            res,
+            503,
+            "PLANNING_UNAVAILABLE",
+            userSafeMessages.planningUnavailable,
+          );
+          return;
         }
 
         sendError(res, 502, "PLANNING_FAILED", userSafeMessages.planningFailed);

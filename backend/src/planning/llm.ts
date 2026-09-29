@@ -1,5 +1,6 @@
 import type { GoogleGenAI } from "@google/genai";
 import { createGeminiClient, getGeminiModel } from "../lib/gemini.js";
+import { withTransientGeminiRetry } from "../lib/gemini-retry.js";
 import {
   candidatePlanJsonSchema,
   constraintsJsonSchema,
@@ -21,33 +22,49 @@ export async function generatePlanningJson(input: {
   responseJsonSchema: Record<string, unknown>;
   client?: GoogleGenAI | null;
   model?: string;
+  maxAttempts?: number;
+  delayMs?: number;
 }): Promise<unknown> {
   const client = input.client === undefined ? createGeminiClient() : input.client;
   if (!client) {
     throw new PlanningUnavailableError();
   }
 
-  const response = await client.models.generateContent({
-    model: input.model ?? getGeminiModel(),
-    contents: input.userPrompt,
-    config: {
-      systemInstruction: input.systemInstruction,
-      temperature: 0.2,
-      responseMimeType: "application/json",
-      responseJsonSchema: input.responseJsonSchema,
+  return withTransientGeminiRetry(
+    async () => {
+      const response = await client.models.generateContent({
+        model: input.model ?? getGeminiModel(),
+        contents: input.userPrompt,
+        config: {
+          systemInstruction: input.systemInstruction,
+          temperature: 0.2,
+          responseMimeType: "application/json",
+          responseJsonSchema: input.responseJsonSchema,
+        },
+      });
+
+      const text = response.text?.trim();
+      if (!text) {
+        throw new PlanningParseError();
+      }
+
+      try {
+        return JSON.parse(text) as unknown;
+      } catch {
+        throw new PlanningParseError();
+      }
     },
-  });
-
-  const text = response.text?.trim();
-  if (!text) {
-    throw new PlanningParseError();
-  }
-
-  try {
-    return JSON.parse(text) as unknown;
-  } catch {
-    throw new PlanningParseError();
-  }
+    {
+      maxAttempts: input.maxAttempts,
+      delayMs: input.delayMs,
+      isFatal: (error) => error instanceof PlanningParseError,
+      onRetry: (nextAttempt, maxAttempts) => {
+        console.info(
+          `[plan] retry=${nextAttempt}/${maxAttempts} reason=transient`,
+        );
+      },
+    },
+  );
 }
 
 export async function generateNormalizedConstraints(input: {

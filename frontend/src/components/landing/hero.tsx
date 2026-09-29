@@ -1,11 +1,9 @@
 "use client";
 
-import { motion } from "motion/react";
 import { ButtonLink } from "@/components/button-link";
 import { Container } from "@/components/container";
 import { HeroVisual } from "@/components/landing/hero-visual";
 import { useAuth } from "@/components/auth/auth-provider";
-import { editorialEase, stagger } from "@/lib/motion";
 
 const headline = [
   { text: "Your closet has", italic: false },
@@ -23,56 +21,25 @@ export function Hero() {
     >
       <Container className="grid min-w-0 items-center gap-16 md:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] md:gap-10 lg:gap-12 xl:gap-20">
         <div className="min-w-0">
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: editorialEase }}
-            className="label text-olive mb-7"
-          >
-            Style what you own
-          </motion.p>
+          <p className="label text-olive mb-7">Style what you own</p>
 
-          <motion.h1
-            initial="hidden"
-            animate="visible"
-            variants={stagger}
-            className="font-serif text-display text-olive text-balance"
-          >
+          <h1 className="font-serif text-display text-olive text-balance">
             {headline.map((line) => (
-              <span key={line.text} className="block overflow-hidden">
-                <motion.span
-                  variants={{
-                    hidden: { y: "100%", opacity: 0 },
-                    visible: {
-                      y: "0%",
-                      opacity: 1,
-                      transition: { duration: 1.05, ease: editorialEase },
-                    },
-                  }}
-                  className={line.italic ? "block italic" : "block"}
-                >
-                  {line.text}
-                </motion.span>
+              <span
+                key={line.text}
+                className={line.italic ? "block italic" : "block"}
+              >
+                {line.text}
               </span>
             ))}
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.55, ease: editorialEase }}
-            className="text-ink mt-8 max-w-md text-[1.05rem] leading-relaxed sm:text-lg"
-          >
+          <p className="text-ink mt-8 max-w-md text-[1.05rem] leading-relaxed sm:text-lg">
             Upload what you already own. REWEAR understands your wardrobe and
             plans new ways to wear it around your life.
-          </motion.p>
+          </p>
 
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.75, ease: editorialEase }}
-            className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8"
-          >
+          <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:gap-8">
             <ButtonLink href="/wardrobe/new">Rewear My Closet</ButtonLink>
             {user ? (
               <ButtonLink href="/plan" variant="secondary">
@@ -83,7 +50,7 @@ export function Hero() {
                 See how it works
               </ButtonLink>
             )}
-          </motion.div>
+          </div>
         </div>
 
         <HeroVisual />
