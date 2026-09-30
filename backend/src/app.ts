@@ -17,6 +17,40 @@ import { healthRouter } from "./routes/health.js";
 import { createLooksRouter } from "./routes/looks.js";
 import { createPlansRouter } from "./routes/plans.js";
 
+function vercelOrigin(host: string | undefined) {
+  const trimmed = host?.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  return trimmed.startsWith("http://") || trimmed.startsWith("https://")
+    ? trimmed
+    : `https://${trimmed}`;
+}
+
+function isAllowedFrontendOrigin(origin: string | undefined) {
+  if (!origin) {
+    return true;
+  }
+
+  const allowed = new Set<string>([
+    process.env.FRONTEND_ORIGIN ?? "http://localhost:3000",
+  ]);
+
+  for (const host of [
+    process.env.VERCEL_URL,
+    process.env.VERCEL_BRANCH_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL,
+  ]) {
+    const value = vercelOrigin(host);
+    if (value) {
+      allowed.add(value);
+    }
+  }
+
+  return allowed.has(origin);
+}
+
 export function createApp(options?: {
   verifyAccessToken?: VerifyAccessToken;
   analyzeGarmentImage?: AnalyzeGarmentImage;
@@ -29,11 +63,12 @@ export function createApp(options?: {
   deleteLook?: DeleteLook;
 }) {
   const app = express();
-  const frontendOrigin = process.env.FRONTEND_ORIGIN ?? "http://localhost:3000";
 
   app.use(
     cors({
-      origin: frontendOrigin,
+      origin: (origin, callback) => {
+        callback(null, isAllowedFrontendOrigin(origin));
+      },
       allowedHeaders: ["Authorization", "Content-Type"],
     }),
   );
