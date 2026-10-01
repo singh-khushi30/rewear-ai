@@ -11,6 +11,7 @@ import { SavedLookError } from "@/lib/looks/errors";
 import { formatSavedDate, pieceCountLabel } from "@/lib/looks/format";
 import { savedLookToPieces } from "@/lib/looks/pieces";
 import { requestSavedLook } from "@/lib/looks/request";
+import { getServerApiOrigin } from "@/lib/server-api-origin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,7 +42,11 @@ export default async function SavedLookDetailPage({
 
   let look;
   try {
-    look = await requestSavedLook(session.access_token, id);
+    look = await requestSavedLook(
+      session.access_token,
+      id,
+      await getServerApiOrigin(),
+    );
   } catch (caught) {
     if (caught instanceof SavedLookError && caught.code === "LOOK_NOT_FOUND") {
       notFound();

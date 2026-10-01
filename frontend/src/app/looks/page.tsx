@@ -7,6 +7,7 @@ import { requireUser } from "@/lib/auth/require-user";
 import { SavedLookError } from "@/lib/looks/errors";
 import { requestSavedLooks } from "@/lib/looks/request";
 import type { SavedLook } from "@/lib/looks/types";
+import { getServerApiOrigin } from "@/lib/server-api-origin";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +30,10 @@ export default async function SavedLooksPage() {
     error = "Sign in to see looks you have saved.";
   } else {
     try {
-      looks = await requestSavedLooks(session.access_token);
+      looks = await requestSavedLooks(
+        session.access_token,
+        await getServerApiOrigin(),
+      );
     } catch (caught) {
       error =
         caught instanceof SavedLookError

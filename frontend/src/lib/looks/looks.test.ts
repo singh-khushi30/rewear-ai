@@ -26,6 +26,7 @@ const files = [
   "lib/looks/api.ts",
   "lib/looks/request.ts",
   "lib/looks/pieces.ts",
+  "lib/server-api-origin.ts",
 ];
 
 test("opening saved looks never calls planning or image generation", () => {

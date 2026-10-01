@@ -43,12 +43,13 @@ function errorCodeFromResponse(
 export async function looksRequest(
   accessToken: string,
   path: string,
-  init: RequestInit = {},
+  init: RequestInit & { origin?: string } = {},
 ) {
+  const { origin = getApiUrl(), ...fetchInit } = init;
   let response: Response;
   try {
-    response = await fetch(`${getApiUrl()}${path}`, {
-      ...init,
+    response = await fetch(`${origin}${path}`, {
+      ...fetchInit,
       headers: {
         Authorization: `Bearer ${accessToken}`,
         ...(init.body ? { "Content-Type": "application/json" } : {}),
@@ -78,13 +79,17 @@ export async function looksRequest(
   return payload;
 }
 
-export async function requestSavedLooks(accessToken: string) {
-  const payload = await looksRequest(accessToken, "/api/looks");
+export async function requestSavedLooks(accessToken: string, origin?: string) {
+  const payload = await looksRequest(accessToken, "/api/looks", { origin });
   return "looks" in payload ? payload.looks : [];
 }
 
-export async function requestSavedLook(accessToken: string, id: string) {
-  const payload = await looksRequest(accessToken, `/api/looks/${id}`);
+export async function requestSavedLook(
+  accessToken: string,
+  id: string,
+  origin?: string,
+) {
+  const payload = await looksRequest(accessToken, `/api/looks/${id}`, { origin });
   if (!("look" in payload)) {
     throw new SavedLookError(savedLookErrorMessage("LOOK_NOT_FOUND"), "LOOK_NOT_FOUND");
   }
