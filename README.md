@@ -2,6 +2,8 @@
 
 **Your closet has more outfits than you think.**
 
+[Live Demo](https://rewear-ai-q3yy.vercel.app)
+
 REWEAR is a multimodal wardrobe planning agent. It turns garment photographs into a structured digital wardrobe, then plans outfits and capsules using only pieces the user actually owns.
 
 Rather than returning a model response as-is, REWEAR extracts constraints, proposes a candidate plan, checks that plan with a deterministic TypeScript validator, and repairs invalid candidates inside a bounded LangGraph loop before anything is shown.
@@ -21,6 +23,7 @@ Rather than returning a model response as-is, REWEAR extracts constraints, propo
 - [Security](#security)
 - [Evaluation](#evaluation)
 - [Running Locally](#running-locally)
+- [Deployment](#deployment)
 - [Environment Variables](#environment-variables)
 - [Testing](#testing)
 - [Design Decisions](#design-decisions)
@@ -93,6 +96,8 @@ flowchart TD
 ```
 
 The frontend owns the editorial UI and writes garments through the user’s Supabase session. Express owns the AI surface: garment analysis, planning, and saved-look mutations. Identity is the access token. Gemini never talks to the database. The validator never calls Gemini.
+
+On Vercel, Next.js and Express ship as one project. The browser calls same-origin `/api/*` rather than a separate backend host.
 
 **Frontend routes:** `/`, `/auth/sign-in`, `/auth/sign-up`, `/wardrobe`, `/wardrobe/new`, `/plan`, `/looks`, `/looks/[id]`.
 
@@ -282,7 +287,19 @@ npm run dev:backend
 npm run dev:frontend
 ```
 
-Frontend defaults to [http://localhost:3000](http://localhost:3000). API defaults to [http://localhost:4000](http://localhost:4000).
+| | URL |
+| --- | --- |
+| Live production app | [https://rewear-ai-q3yy.vercel.app](https://rewear-ai-q3yy.vercel.app) |
+| Local frontend | [http://localhost:3000](http://localhost:3000) |
+| Local backend | [http://localhost:4000](http://localhost:4000) |
+
+## Deployment
+
+Production is a **single Vercel project**: [https://rewear-ai-q3yy.vercel.app](https://rewear-ai-q3yy.vercel.app).
+
+- Next.js serves the application
+- The existing Express API is exposed from the same deployment under `/api/*`
+- Production browser requests use same-origin `/api` (no separate API origin)
 
 ## Environment Variables
 
