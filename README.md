@@ -2,7 +2,7 @@
 
 **Your closet has more outfits than you think.**
 
-[Live Demo](https://rewear-ai-q3yy.vercel.app)
+[Live Demo](https://rewear-ai.vercel.app)
 
 REWEAR is a multimodal wardrobe planning agent. It turns garment photographs into a structured digital wardrobe, then plans outfits and capsules using only pieces the user actually owns.
 
@@ -289,13 +289,13 @@ npm run dev:frontend
 
 | | URL |
 | --- | --- |
-| Live production app | [https://rewear-ai-q3yy.vercel.app](https://rewear-ai-q3yy.vercel.app) |
+| Live production app | [https://rewear-ai.vercel.app](https://rewear-ai.vercel.app) |
 | Local frontend | [http://localhost:3000](http://localhost:3000) |
 | Local backend | [http://localhost:4000](http://localhost:4000) |
 
 ## Deployment
 
-Production is a **single Vercel project**: [https://rewear-ai-q3yy.vercel.app](https://rewear-ai-q3yy.vercel.app).
+Production is a **single Vercel project**: [https://rewear-ai.vercel.app](https://rewear-ai.vercel.app).
 
 - Next.js serves the application
 - The existing Express API is exposed from the same deployment under `/api/*`
